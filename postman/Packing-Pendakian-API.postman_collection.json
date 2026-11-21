@@ -1,0 +1,870 @@
+{
+  "info": {
+    "name": "Packing Pendakian API",
+    "description": "Koleksi pengujian Final Project Study Club Backend Basic.\n\nCara pakai: jalankan server (npm start), jalankan `npm run seed` agar ada data contoh, lalu Run collection. Variabel `baseUrl` dapat diubah di tab Variables. Variabel `itemId` diisi otomatis oleh request Create.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "itemId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Health check",
+      "item": [
+        {
+          "name": "GET / (server berjalan)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. CREATE",
+      "item": [
+        {
+          "name": "POST tambah item (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test(\"totalBerat dihitung dan dikemas bawaan false\", function () { const d = pm.response.json().data; pm.expect(d.totalBerat).to.eql(2200); pm.expect(d.dikemas).to.eql(false); });",
+                  "pm.collectionVariables.set(\"itemId\", pm.response.json().data._id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Tenda dome 3 orang\",\n  \"kategori\": \"Tenda & Tidur\",\n  \"berat\": 2200,\n  \"jumlah\": 1,\n  \"prioritas\": \"wajib\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST data tidak valid (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = false\", function () { pm.expect(pm.response.json().success).to.eql(false); });",
+                  "pm.test(\"errors berisi daftar pesan\", function () { pm.expect(pm.response.json().errors).to.be.an(\"array\").that.is.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"\",\n  \"kategori\": \"Mobil\",\n  \"berat\": -5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST nama duplikat (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 409\", function () { pm.response.to.have.status(409); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = false\", function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Tenda dome 3 orang\",\n  \"kategori\": \"Tenda & Tidur\",\n  \"berat\": 2200\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. READ",
+      "item": [
+        {
+          "name": "GET semua item (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test(\"count sesuai jumlah data\", function () { const j = pm.response.json(); pm.expect(j.count).to.eql(j.data.length); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET filter + sort (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test(\"semua item berkategori Tenda & Tidur dan terurut berat menurun\", function () { const d = pm.response.json().data; d.forEach(i => pm.expect(i.kategori).to.eql(\"Tenda & Tidur\")); for (let i = 1; i < d.length; i++) pm.expect(d[i-1].berat).to.be.at.least(d[i].berat); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items?kategori=Tenda%20%26%20Tidur&dikemas=false&sort=-berat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ],
+              "query": [
+                {
+                  "key": "kategori",
+                  "value": "Tenda & Tidur"
+                },
+                {
+                  "key": "dikemas",
+                  "value": "false"
+                },
+                {
+                  "key": "sort",
+                  "value": "-berat"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET cari nama (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items?cari=tenda",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ],
+              "query": [
+                {
+                  "key": "cari",
+                  "value": "tenda"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET item berdasarkan ID (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test(\"ID sesuai\", function () { pm.expect(pm.response.json().data._id).to.eql(pm.collectionVariables.get(\"itemId\")); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{itemId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET ID tidak ditemukan (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = false\", function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/64b7f0f0f0f0f0f0f0f0f0f0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "64b7f0f0f0f0f0f0f0f0f0f0"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET format ID salah (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = false\", function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "abc"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET filter tidak valid (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = false\", function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items?kategori=Mobil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items"
+              ],
+              "query": [
+                {
+                  "key": "kategori",
+                  "value": "Mobil"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET ringkasan beban tas (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test(\"ringkasan memuat total, persen, dan per kategori\", function () { const d = pm.response.json().data; pm.expect(d).to.have.property(\"totalGram\"); pm.expect(d).to.have.property(\"persenPemakaian\"); pm.expect(d).to.have.property(\"perKategori\"); pm.expect(d.batasGram).to.eql(9000); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/ringkasan?batas=9",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "ringkasan"
+              ],
+              "query": [
+                {
+                  "key": "batas",
+                  "value": "9"
+                }
+              ]
+            },
+            "description": "Jalankan `npm run seed` dulu agar data cukup banyak."
+          }
+        },
+        {
+          "name": "GET saran pengurangan beban (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test(\"item wajib tidak pernah disarankan dibuang\", function () { pm.response.json().data.saran.forEach(i => pm.expect(i.prioritas).to.not.eql(\"wajib\")); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/saran?batas=6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "saran"
+              ],
+              "query": [
+                {
+                  "key": "batas",
+                  "value": "6"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET batas tidak valid (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = false\", function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/ringkasan?batas=abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "ringkasan"
+              ],
+              "query": [
+                {
+                  "key": "batas",
+                  "value": "abc"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. UPDATE",
+      "item": [
+        {
+          "name": "PUT ganti seluruh data (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test(\"data berubah\", function () { const d = pm.response.json().data; pm.expect(d.nama).to.eql(\"Tenda dome 3 orang (baru)\"); pm.expect(d.berat).to.eql(2000); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Tenda dome 3 orang (baru)\",\n  \"kategori\": \"Tenda & Tidur\",\n  \"berat\": 2000,\n  \"jumlah\": 1,\n  \"prioritas\": \"wajib\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/items/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{itemId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT field wajib tidak lengkap (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = false\", function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nama\": \"Hanya nama\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/items/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{itemId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH ubah sebagian field (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test(\"hanya berat yang berubah\", function () { const d = pm.response.json().data; pm.expect(d.berat).to.eql(1900); pm.expect(d.nama).to.eql(\"Tenda dome 3 orang (baru)\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"berat\": 1900\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/items/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{itemId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH ID tidak ditemukan (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = false\", function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"berat\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/items/64b7f0f0f0f0f0f0f0f0f0f0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "64b7f0f0f0f0f0f0f0f0f0f0"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH tandai dikemas (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test(\"dikemas menjadi true\", function () { pm.expect(pm.response.json().data.dikemas).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/{{itemId}}/kemas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{itemId}}",
+                "kemas"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. DELETE",
+      "item": [
+        {
+          "name": "DELETE hapus item (200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = true\", function () { pm.expect(pm.response.json().success).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{itemId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE item yang sudah dihapus (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 404\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Respons berbentuk JSON\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"success = false\", function () { pm.expect(pm.response.json().success).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/{{itemId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "{{itemId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE semua opsional belum dikemas (200 atau 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 (ada yang dihapus) atau 404 (tidak ada)\", function () { pm.expect(pm.response.code).to.be.oneOf([200, 404]); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/items/opsional/belum-dikemas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "items",
+                "opsional",
+                "belum-dikemas"
+              ]
+            },
+            "description": "Menghapus item berprioritas opsional yang belum dikemas. Mengembalikan 404 jika tidak ada yang cocok."
+          }
+        }
+      ]
+    }
+  ]
+}
