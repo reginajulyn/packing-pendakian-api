@@ -13,7 +13,7 @@ Prasyarat: Node.js 18 atau lebih baru, dan MongoDB (lokal atau [MongoDB Atlas](h
 
 ```bash
 # 1. Clone repositori dan masuk ke foldernya
-git clone https://github.com/<username>/packing-pendakian-api.git
+git clone https://github.com/reginajulyn/packing-pendakian-api.git
 cd packing-pendakian-api
 
 # 2. Pasang dependensi
@@ -31,11 +31,11 @@ npm start                   # atau: npm run dev (restart otomatis saat file beru
 
 Server berjalan di `http://localhost:3000`. Isi `.env`:
 
-| Variabel | Keterangan | Contoh |
-|---|---|---|
-| `PORT` | Port server | `3000` |
-| `MONGODB_URI` | Alamat koneksi MongoDB | `mongodb://127.0.0.1:27017/packing_pendakian` |
-| `BATAS_BERAT_KG` | Batas beban tas bawaan (kg) | `9` |
+| Variabel         | Keterangan                  | Contoh                                        |
+| ---------------- | --------------------------- | --------------------------------------------- |
+| `PORT`           | Port server                 | `3000`                                        |
+| `MONGODB_URI`    | Alamat koneksi MongoDB      | `mongodb://127.0.0.1:27017/packing_pendakian` |
+| `BATAS_BERAT_KG` | Batas beban tas bawaan (kg) | `9`                                           |
 
 ## Struktur folder
 
@@ -65,34 +65,34 @@ packing-pendakian-api/
 
 ## Model data (Item)
 
-| Field | Tipe | Aturan |
-|---|---|---|
-| `nama` | String | wajib, unik (tidak peka huruf besar/kecil), maks 100 karakter |
-| `kategori` | String | wajib: `Tenda & Tidur`, `Pakaian`, `Makanan & Minuman`, `Peralatan`, `Keselamatan`, `Lainnya` |
-| `berat` | Number | wajib, bilangan bulat 1 sampai 50000 (gram per satuan) |
-| `jumlah` | Number | bawaan `1`, bilangan bulat 1 sampai 99 |
-| `prioritas` | String | bawaan `penting`: `wajib`, `penting`, `opsional` |
-| `dikemas` | Boolean | bawaan `false` |
-| `totalBerat` | Number | dihitung otomatis: `berat x jumlah` (tidak disimpan) |
-| `createdAt`, `updatedAt` | Date | diisi otomatis |
+| Field                    | Tipe    | Aturan                                                                                        |
+| ------------------------ | ------- | --------------------------------------------------------------------------------------------- |
+| `nama`                   | String  | wajib, unik (tidak peka huruf besar/kecil), maks 100 karakter                                 |
+| `kategori`               | String  | wajib: `Tenda & Tidur`, `Pakaian`, `Makanan & Minuman`, `Peralatan`, `Keselamatan`, `Lainnya` |
+| `berat`                  | Number  | wajib, bilangan bulat 1 sampai 50000 (gram per satuan)                                        |
+| `jumlah`                 | Number  | bawaan `1`, bilangan bulat 1 sampai 99                                                        |
+| `prioritas`              | String  | bawaan `penting`: `wajib`, `penting`, `opsional`                                              |
+| `dikemas`                | Boolean | bawaan `false`                                                                                |
+| `totalBerat`             | Number  | dihitung otomatis: `berat x jumlah` (tidak disimpan)                                          |
+| `createdAt`, `updatedAt` | Date    | diisi otomatis                                                                                |
 
 ## Daftar endpoint
 
 Base URL: `http://localhost:3000`
 
-| Method | Endpoint | Fungsi | Status sukses |
-|---|---|---|---|
-| GET | `/` | Cek server berjalan | 200 |
-| **POST** | `/api/items` | **Create** item baru | 201 |
-| **GET** | `/api/items` | **Read** semua item (filter dan sort, lihat di bawah) | 200 |
-| **GET** | `/api/items/:id` | **Read** satu item berdasarkan ID | 200 |
-| GET | `/api/items/ringkasan` | Ringkasan beban tas (total, dikemas, persen, per kategori) | 200 |
-| GET | `/api/items/saran` | Saran item yang dikeluarkan jika tas melebihi batas | 200 |
-| **PUT** | `/api/items/:id` | **Update** seluruh data item | 200 |
-| **PATCH** | `/api/items/:id` | **Update** sebagian field | 200 |
-| PATCH | `/api/items/:id/kemas` | Tandai dikemas atau batalkan (toggle) | 200 |
-| **DELETE** | `/api/items/:id` | **Delete** satu item | 200 |
-| DELETE | `/api/items/opsional/belum-dikemas` | Hapus semua item opsional yang belum dikemas | 200 |
+| Method     | Endpoint                            | Fungsi                                                     | Status sukses |
+| ---------- | ----------------------------------- | ---------------------------------------------------------- | ------------- |
+| GET        | `/`                                 | Cek server berjalan                                        | 200           |
+| **POST**   | `/api/items`                        | **Create** item baru                                       | 201           |
+| **GET**    | `/api/items`                        | **Read** semua item (filter dan sort, lihat di bawah)      | 200           |
+| **GET**    | `/api/items/:id`                    | **Read** satu item berdasarkan ID                          | 200           |
+| GET        | `/api/items/ringkasan`              | Ringkasan beban tas (total, dikemas, persen, per kategori) | 200           |
+| GET        | `/api/items/saran`                  | Saran item yang dikeluarkan jika tas melebihi batas        | 200           |
+| **PUT**    | `/api/items/:id`                    | **Update** seluruh data item                               | 200           |
+| **PATCH**  | `/api/items/:id`                    | **Update** sebagian field                                  | 200           |
+| PATCH      | `/api/items/:id/kemas`              | Tandai dikemas atau batalkan (toggle)                      | 200           |
+| **DELETE** | `/api/items/:id`                    | **Delete** satu item                                       | 200           |
+| DELETE     | `/api/items/opsional/belum-dikemas` | Hapus semua item opsional yang belum dikemas               | 200           |
 
 **Query pada `GET /api/items`:** `kategori`, `prioritas`, `dikemas` (`true`/`false`), `cari` (kata kunci nama), `sort` (`nama`, `kategori`, `berat`, `createdAt`; awali `-` untuk menurun). Contoh: `/api/items?kategori=Peralatan&dikemas=false&sort=-berat`
 
@@ -137,14 +137,14 @@ Respons `201 Created`:
 
 Semua respons berbentuk JSON dengan `success` dan `message`. Respons daftar menambah `count`, dan respons gagal validasi menambah `errors`.
 
-| Status | Arti | Contoh kasus |
-|---|---|---|
-| 200 | OK | data berhasil dibaca, diubah, atau dihapus |
-| 201 | Created | item berhasil dibuat |
-| 400 | Bad Request | data tidak valid, format ID salah, JSON rusak, parameter query salah |
-| 404 | Not Found | item dengan ID tersebut tidak ada, atau route tidak dikenal |
-| 409 | Conflict | nama item sudah ada |
-| 500 | Internal Server Error | kesalahan tak terduga di server (misalnya database tidak terjangkau) |
+| Status | Arti                  | Contoh kasus                                                         |
+| ------ | --------------------- | -------------------------------------------------------------------- |
+| 200    | OK                    | data berhasil dibaca, diubah, atau dihapus                           |
+| 201    | Created               | item berhasil dibuat                                                 |
+| 400    | Bad Request           | data tidak valid, format ID salah, JSON rusak, parameter query salah |
+| 404    | Not Found             | item dengan ID tersebut tidak ada, atau route tidak dikenal          |
+| 409    | Conflict              | nama item sudah ada                                                  |
+| 500    | Internal Server Error | kesalahan tak terduga di server (misalnya database tidak terjangkau) |
 
 ## Pengujian
 
